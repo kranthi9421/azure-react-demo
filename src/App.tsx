@@ -1,7 +1,36 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+type User = {
+  _id: string;
+  name: string;
+  email: string;
+};
 
 const App = () => {
   const [active, setActive] = useState("Overview");
+  const [users, setUsers] = useState<User[]>([]);
+
+  useEffect(() => {
+    const getUsers = async () => {
+      try {
+        const res = await fetch(
+          "https://hayu-dpc0hxegagefg4gh.centralus-01.azurewebsites.net/users"
+        );
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch users");
+        }
+
+        const data: User[] = await res.json();
+
+        setUsers(data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    getUsers();
+  }, []);
 
   const stats = [
     { label: "Total Revenue", value: "$84,240", change: "+12.5%" },
@@ -404,6 +433,7 @@ const App = () => {
                   <h2 style={{ margin: 0, fontSize: 17 }}>
                     Revenue Overview
                   </h2>
+
                   <p
                     style={{
                       margin: "5px 0 0",
@@ -449,9 +479,7 @@ const App = () => {
                         height: `${height}%`,
                         borderRadius: "6px 6px 0 0",
                         background:
-                          index === 11
-                            ? "#635bff"
-                            : "#dcd9ff",
+                          index === 11 ? "#635bff" : "#dcd9ff",
                         transition: "0.3s",
                       }}
                     />
@@ -550,6 +578,63 @@ const App = () => {
             </section>
           </div>
 
+          {/* Users from Azure API */}
+          <section
+            style={{
+              background: "#fff",
+              border: "1px solid #e8ebf1",
+              borderRadius: 14,
+              marginTop: 22,
+              padding: 24,
+            }}
+          >
+            <div style={{ marginBottom: 18 }}>
+              <h2 style={{ margin: 0, fontSize: 17 }}>
+                Users
+              </h2>
+
+              <p
+                style={{
+                  margin: "5px 0 0",
+                  color: "#8a93a6",
+                  fontSize: 12,
+                }}
+              >
+                Users loaded from Azure Node.js API
+              </p>
+            </div>
+
+            {users.length === 0 ? (
+              <p style={{ color: "#8a93a6", fontSize: 13 }}>
+                No users found.
+              </p>
+            ) : (
+              users.map((user) => (
+                <div
+                  key={user._id}
+                  style={{
+                    padding: "14px 0",
+                    borderTop: "1px solid #edf0f4",
+                  }}
+                >
+                  <div style={{ fontSize: 13, fontWeight: 700 }}>
+                    {user.name}
+                  </div>
+
+                  <div
+                    style={{
+                      fontSize: 11,
+                      color: "#8a93a6",
+                      marginTop: 3,
+                    }}
+                  >
+                    {user.email}
+                  </div>
+                </div>
+              ))
+            )}
+          </section>
+
           {/* Activity */}
           <section
             style={{
@@ -571,6 +656,7 @@ const App = () => {
                 <h2 style={{ margin: 0, fontSize: 17 }}>
                   Recent Activity
                 </h2>
+
                 <p
                   style={{
                     margin: "5px 0 0",
@@ -604,8 +690,7 @@ const App = () => {
                   alignItems: "center",
                   justifyContent: "space-between",
                   padding: "14px 0",
-                  borderTop:
-                    index === 0 ? "1px solid #edf0f4" : "1px solid #edf0f4",
+                  borderTop: "1px solid #edf0f4",
                 }}
               >
                 <div
