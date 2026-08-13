@@ -289,7 +289,7 @@ const App = () => {
                   letterSpacing: "-0.7px",
                 }}
               >
-                Good afternoon, Kranthi 👋
+                Good afternoon, Hayansh 👋
               </h1>
 
               <p
